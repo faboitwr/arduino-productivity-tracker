@@ -1,4 +1,5 @@
-# Simple daily productivity tracker, utilises 3 push buttons, 1 16x2 LCD screen, Arduino microcontroller, breadboard & assortment of wires. (INCOMPLETE)
-Arduino productivity tracker, made to learn C++ syntax.
+# Arduino Daily Productivity Tracker (INCOMPLETE)
+Arduino productivity tracker, made for myself to learn C++ syntax.
 
-Created to help myself record how many hours of "productivity" I've accomplished within a single day.
+##Introduction
+This Arduino Daily Productivity Tracker was designed so the user (myself) can record their daily hours without using their smart devices (mobile phones, tablets) or physical records (notebooks, pen & paper).
