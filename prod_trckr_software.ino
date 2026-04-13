@@ -19,7 +19,9 @@ int temp3S = HIGH;
 
 // Programme Data Initialisation
 int menuS = 0;
+int enterS = 0;
 String menuI[3] = {"Daily Target", "Daily Total", "+ Hours"};
+
 int dailyTg = 0;
 int dailyTt = 0;
 int dailyHr = 0;
@@ -53,6 +55,7 @@ bool buttonDet(uint8_t input, int button){
   temp1S = button1S;
   temp2S = button2S;
   temp3S = button3S;
+  
   switch (button){
    
     case 1:
@@ -79,23 +82,9 @@ bool buttonDet(uint8_t input, int button){
   }
 }
 
-// Programme Data Manipulator
-void menu(int mS){
-  String strDTt = "";
-  switch (mS){
-    case 0: // Adjust daily target
-    	
-    	break;
-    
-    case 1: // Check daily "productive hours"
-        strDTt = String(dailyTt);
-        lcdUpdate(strDTt);
-        break;
-    
-    case 2: // Add daily "productive hours"
-    	
-    	break;
-  }
+//
+void addValue(int value){
+  dailyTt += value;
 }
 
 // Screen changer
@@ -105,25 +94,83 @@ void lcdUpdate(String output){
 }
 
 // Programme Runner
+// Menu to be remade. Either debug this system or use a fixed library.
 void loop(){
-  // <- Button
-  if (buttonDet(button1P, 1) == true && menuS > 0){
-    //Serial.print("Button 1 Pressed; ");
-    menuS -= 1;
-    lcdUpdate(menuI[menuS]);
-  }
-  // Enter Button
-  if (buttonDet(button2P, 2) == true){
-    //Serial.print("Button 2 Pressed; ");
-    menu(menuS);
+  // Menu first layer
+  if (enterS == 0){
+    // <- Button
+    if (buttonDet(button1P, 1) == true && menuS > 0){
+      //Serial.print("Button 1 Pressed; ");
+      menuS -= 1;
+      lcdUpdate(menuI[menuS]);
+    }
     
+    // Enter Button
+    if (buttonDet(button2P, 2) == true){
+      //Serial.print("Button 2 Pressed; ");
+      enterS = 1;
+    }
+
+    // -> Button
+    if (buttonDet(button3P, 3) == true && menuS < 2){
+      //Serial.print("Button 3 Pressed; ");
+      menuS += 1;
+      lcdUpdate(menuI[menuS]);
+    }
   }
   
-  // -> Button
-  if (buttonDet(button3P, 3) == true && menuS < 2){
-    //Serial.print("Button 3 Pressed; ");
-    menuS += 1;
-    lcdUpdate(menuI[menuS]);
+  // Menu second layer
+  if (enterS == 1){
+    switch (menuS){
+    	case 0:
+      		lcdUpdate(String(dailyTg));
+            // <- Button
+            if (buttonDet(button1P, 1) == true && dailyTg > 0){
+              dailyTg -= 1;
+              lcdUpdate(String(dailyTg));
+            }
+
+            // Enter Button
+            if (buttonDet(button2P, 2) == true){
+              lcdUpdate(menuI[menuS]);
+              enterS = 0;
+            }
+
+            // -> Button
+            if (buttonDet(button3P, 3) == true && dailyTg < 24){
+              dailyTg += 1;
+              lcdUpdate(String(dailyTg));
+            }
+      
+      	case 1:
+      		lcdUpdate(String(dailyTt));
+      		if (buttonDet(button2P, 2) == true){
+              lcdUpdate(menuI[menuS]);
+              enterS = 0;
+            }
+      
+      	case 2:
+      		lcdUpdate(String(dailyHr));
+            // <- Button
+            if (buttonDet(button1P, 1) == true && dailyHr > 0){
+              dailyHr -= 1;
+              lcdUpdate(String(dailyHr));
+            }
+
+            // Enter Button
+            if (buttonDet(button2P, 2) == true){
+              addValue(dailyHr);
+              lcdUpdate(menuI[menuS]);
+              enterS = 0;
+              dailyHr = 0;              
+            }
+
+            // -> Button
+            if (buttonDet(button3P, 3) == true && dailyHr < 24){
+              dailyHr += 1;
+              lcdUpdate(String(dailyHr));
+            }
+    }
   }
   delay(150);
 }
