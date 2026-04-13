@@ -10,9 +10,12 @@ const int button1P = 13;
 const int button2P = 12;
 const int button3P = 11;
 
-int button1S = 0;
-int button2S = 0;
-int button3S = 0;
+int button1S = HIGH;
+int button2S = HIGH;
+int button3S = HIGH;
+int temp1S = HIGH;
+int temp2S = HIGH;
+int temp3S = HIGH;
 
 // Programme Data Initialisation
 int menuS = 0;
@@ -23,11 +26,6 @@ int dailyHr = 0;
 
 // Device Start-up 
 void setup(){
-  // Ensure button state
-  int button1S = 0;
-  int button2S = 0;
-  int button3S = 0;
-  
   // LCD Set-up & Start-up Screen
   lcd.begin(16,2);
   lcd.print("Productivity Aid");
@@ -42,23 +40,43 @@ void setup(){
   pinMode(button2P, INPUT_PULLUP);
   pinMode(button3P, INPUT_PULLUP);
   
-  /*Serial Set-up (For debugging)
+  /*
+  //Serial Set-up (For debugging)
   Serial.begin(9600);
   Serial.print("Hello Debug. ");
-  Serial.print(menuI[menuS]);
+  //Serial.print(menuI[menuS]);
   */
 }
 
-// Button Click Detection
-
-// To be rebuilt to have release detection instead
-int buttonDet(uint8_t input, int button, int buttonS){
-  buttonS = digitalRead(input);
-  if (buttonS == LOW)
-  {
-    return true;
+// Button Release Detection
+bool buttonDet(uint8_t input, int button){
+  temp1S = button1S;
+  temp2S = button2S;
+  temp3S = button3S;
+  switch (button){
+   
+    case 1:
+    	button1S = digitalRead(input);
+      	if (button1S != temp1S && button1S == LOW){
+          return true;
+        }
+    	return false;
+    	break;
+    case 2:
+    	button2S = digitalRead(input);
+      	if (button2S != temp2S && button2S == LOW){
+          return true;
+        }
+    	return false;
+    	break;
+    case 3:
+    	button3S = digitalRead(input);
+      	if (button3S != temp3S && button3S == LOW){
+          return true;
+        }
+    	return false;
+    	break;
   }
-  return false;
 }
 
 // Programme Data Manipulator
@@ -72,9 +90,6 @@ void menu(int mS){
     case 1: // Check daily "productive hours"
         strDTt = String(dailyTt);
         lcdUpdate(strDTt);
-        if (buttonDet(button2P, 2, button2S) == true){
-          lcdUpdate(menuI[menuS]);
-        }
         break;
     
     case 2: // Add daily "productive hours"
@@ -83,6 +98,7 @@ void menu(int mS){
   }
 }
 
+// Screen changer
 void lcdUpdate(String output){
   lcd.clear();
   lcd.print(output);
@@ -90,23 +106,22 @@ void lcdUpdate(String output){
 
 // Programme Runner
 void loop(){
-  // Serial.print(menuS);
   // <- Button
-  if (buttonDet(button1P, 1, button1S) == true && menuS > 0){
-    Serial.print("Button 1 Pressed; ");
+  if (buttonDet(button1P, 1) == true && menuS > 0){
+    //Serial.print("Button 1 Pressed; ");
     menuS -= 1;
     lcdUpdate(menuI[menuS]);
   }
-  
   // Enter Button
-  if (buttonDet(button2P, 2, button2S) == true){
-    Serial.print("Button 2 Pressed; ");
+  if (buttonDet(button2P, 2) == true){
+    //Serial.print("Button 2 Pressed; ");
     menu(menuS);
+    
   }
   
   // -> Button
-  if (buttonDet(button3P, 3, button3S) == true && menuS < 2){
-    Serial.print("Button 3 Pressed; ");
+  if (buttonDet(button3P, 3) == true && menuS < 2){
+    //Serial.print("Button 3 Pressed; ");
     menuS += 1;
     lcdUpdate(menuI[menuS]);
   }
