@@ -22,7 +22,7 @@ int menuS = 0;
 int enterS = 0;
 String menuI[3] = {"Daily Target", "Daily Total", "+ Hours"};
 
-int dailyTg = 0;
+int dailyTg = 8;
 int dailyTt = 0;
 int dailyHr = 0;
 
@@ -82,7 +82,9 @@ bool buttonDet(uint8_t input, int button){
   }
 }
 
-//
+// Working functions
+
+// Value adder
 void addValue(int value){
   dailyTt += value;
 }
@@ -94,82 +96,28 @@ void lcdUpdate(String output){
 }
 
 // Programme Runner
-// Menu to be remade. Either debug this system or use a fixed library.
+// Menu to be fixed.
 void loop(){
   // Menu first layer
   if (enterS == 0){
     // <- Button
     if (buttonDet(button1P, 1) == true && menuS > 0){
-      //Serial.print("Button 1 Pressed; ");
+      // Serial.print("Button 1 Pressed; ");
       menuS -= 1;
       lcdUpdate(menuI[menuS]);
     }
     
     // Enter Button
     if (buttonDet(button2P, 2) == true){
-      //Serial.print("Button 2 Pressed; ");
+      // Serial.print("Button 2 Pressed; ");
       enterS = 1;
     }
 
     // -> Button
     if (buttonDet(button3P, 3) == true && menuS < 2){
-      //Serial.print("Button 3 Pressed; ");
+      // Serial.print("Button 3 Pressed; ");
       menuS += 1;
       lcdUpdate(menuI[menuS]);
-    }
-  }
-  
-  // Menu second layer
-  if (enterS == 1){
-    switch (menuS){
-    	case 0:
-      		lcdUpdate(String(dailyTg));
-            // <- Button
-            if (buttonDet(button1P, 1) == true && dailyTg > 0){
-              dailyTg -= 1;
-              lcdUpdate(String(dailyTg));
-            }
-
-            // Enter Button
-            if (buttonDet(button2P, 2) == true){
-              lcdUpdate(menuI[menuS]);
-              enterS = 0;
-            }
-
-            // -> Button
-            if (buttonDet(button3P, 3) == true && dailyTg < 24){
-              dailyTg += 1;
-              lcdUpdate(String(dailyTg));
-            }
-      
-      	case 1:
-      		lcdUpdate(String(dailyTt));
-      		if (buttonDet(button2P, 2) == true){
-              lcdUpdate(menuI[menuS]);
-              enterS = 0;
-            }
-      
-      	case 2:
-      		lcdUpdate(String(dailyHr));
-            // <- Button
-            if (buttonDet(button1P, 1) == true && dailyHr > 0){
-              dailyHr -= 1;
-              lcdUpdate(String(dailyHr));
-            }
-
-            // Enter Button
-            if (buttonDet(button2P, 2) == true){
-              addValue(dailyHr);
-              lcdUpdate(menuI[menuS]);
-              enterS = 0;
-              dailyHr = 0;              
-            }
-
-            // -> Button
-            if (buttonDet(button3P, 3) == true && dailyHr < 24){
-              dailyHr += 1;
-              lcdUpdate(String(dailyHr));
-            }
     }
   }
   delay(150);
